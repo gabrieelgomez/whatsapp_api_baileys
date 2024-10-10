@@ -30,7 +30,7 @@ const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
         ].join('\n'),
         { delay: 800, capture: true },
         async (ctx, { fallBack }) => {
-            console.log(ctx)
+            // console.log(ctx)
             if (!ctx.body.toLocaleLowerCase().includes('doc')) {
                 return fallBack('You should type *doc*')
             }

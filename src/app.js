@@ -19,22 +19,24 @@ const discordFlow = addKeyword('doc').addAnswer(
     }
 )
 
-const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
-    .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
-    .addAnswer(
-        [
-            'I share with you the following links of interest about the project',
-            '👉 *doc* to view the documentation',
-        ].join('\n'),
-        { delay: 800, capture: true },
-        async (ctx, { fallBack }) => {
-            if (!ctx.body.toLocaleLowerCase().includes('doc')) {
-                return fallBack('You should type *doc*')
-            }
-            return
-        },
-        [discordFlow]
-    )
+console.log(discordFlow);
+
+// const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
+//     .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
+//     .addAnswer(
+//         [
+//             'I share with you the following links of interest about the project',
+//             '👉 *doc* to view the documentation',
+//         ].join('\n'),
+//         { delay: 800, capture: true },
+//         async (ctx, { fallBack }) => {
+//             if (!ctx.body.toLocaleLowerCase().includes('doc')) {
+//                 return fallBack('You should type *doc*')
+//             }
+//             return
+//         },
+//         [discordFlow]
+//     )
 
 const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
     .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
@@ -59,8 +61,8 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
     })
 
 const main = async () => {
-    const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
-    
+    const adapterFlow = createFlow([registerFlow, fullSamplesFlow])
+
     const adapterProvider = createProvider(Provider)
     const adapterDB = new Database()
 
@@ -74,8 +76,17 @@ const main = async () => {
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
             const { number, message, urlMedia } = req.body
-            await bot.sendMessage(number, message, { media: urlMedia ?? null })
-            return res.end('sended')
+            console.log(`Received POST to /v1/messages with number: ${number}`)  // Log for received request
+            try {
+                await bot.sendMessage(number, message, { media: urlMedia ?? null })
+                console.log(`Message sent to ${number}\n\n`)
+                res.writeHead(200, { 'Content-Type': 'text/plain' })
+                res.end('sended')
+            } catch (error) {
+                console.error(`Error sending message to ${number} \n\n`, error)
+                res.writeHead(500, { 'Content-Type': 'text/plain' })
+                res.end('error')
+            }
         })
     )
 

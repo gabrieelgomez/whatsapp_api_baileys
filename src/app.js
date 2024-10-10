@@ -21,22 +21,23 @@ const discordFlow = addKeyword('doc').addAnswer(
 
 console.log(discordFlow);
 
-// const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
-//     .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
-//     .addAnswer(
-//         [
-//             'I share with you the following links of interest about the project',
-//             '👉 *doc* to view the documentation',
-//         ].join('\n'),
-//         { delay: 800, capture: true },
-//         async (ctx, { fallBack }) => {
-//             if (!ctx.body.toLocaleLowerCase().includes('doc')) {
-//                 return fallBack('You should type *doc*')
-//             }
-//             return
-//         },
-//         [discordFlow]
-//     )
+const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
+    .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
+    .addAnswer(
+        [
+            'I share with you the following links of interest about the project',
+            '👉 *doc* to view the documentation',
+        ].join('\n'),
+        { delay: 800, capture: true },
+        async (ctx, { fallBack }) => {
+            console.log(ctx)
+            if (!ctx.body.toLocaleLowerCase().includes('doc')) {
+                return fallBack('You should type *doc*')
+            }
+            return
+        },
+        [discordFlow]
+    )
 
 const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
     .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
@@ -61,7 +62,7 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
     })
 
 const main = async () => {
-    const adapterFlow = createFlow([registerFlow, fullSamplesFlow])
+    const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
 
     const adapterProvider = createProvider(Provider)
     const adapterDB = new Database()
